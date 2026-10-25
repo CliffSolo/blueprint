@@ -3,19 +3,49 @@
   "title": "Four strokes, one at a time",
   "minutes": 6,
   "blocks": [
-    { "type": "text", "text": "Mechanics remember the four strokes as **suck, squeeze, bang, blow**. Tap **Start** below and step through them one at a time." },
+    { "type": "list", "intro": "The four strokes of the engine are:", "items": [
+      "**Intake** (suck)",
+      "**Compression** (squeeze)",
+      "**Power** (bang)",
+      "**Exhaust** (blow)"
+    ] },
     { "type": "lab", "src": "labs/engine.html", "params": "mode=step&labels=0", "height": 540, "caption": "One stroke per tap. Watch which valve is open each time.", "narration": "Tap Start, then Next, to move through the strokes one by one." },
     { "type": "heading", "text": "1. Intake (suck)" },
-    { "type": "text", "text": "The piston slides **down** and the intake valve is **open**. The falling piston leaves low pressure behind it, so air and fuel get pushed in by the air outside. Same as pulling back the plunger on a syringe." },
+    { "type": "list", "items": [
+      "Piston moves **down**",
+      "Intake valve **open**, exhaust valve closed",
+      "The falling piston leaves **low pressure** behind it",
+      "Outside air pushes **air and fuel** in to fill the space",
+      "Like pulling back the plunger on a syringe"
+    ] },
     { "type": "heading", "text": "2. Compression (squeeze)" },
-    { "type": "text", "text": "Both valves **close**. The piston comes back **up** and squeezes the mix into about a tenth of the space. Squeezed mix burns hotter and pushes much harder, which is the whole point." },
+    { "type": "list", "items": [
+      "Piston moves **up**",
+      "**Both valves closed**, so the mix is sealed in",
+      "The mix is squeezed into about **a tenth** of the space",
+      "Squeezed mix burns **hotter** and pushes **harder**"
+    ] },
     { "type": "heading", "text": "3. Power (bang)" },
-    { "type": "text", "text": "Just before the piston reaches the top, the spark plug fires. The mix burns in a flash, the gas gets very hot, its pressure shoots up, and it shoves the piston **down** hard. This is the **only** stroke that makes power. The other three are just setting it up." },
+    { "type": "list", "items": [
+      "Spark plug fires **just before the top**",
+      "The mix burns in a flash and gets very hot",
+      "Gas pressure **shoots up** and shoves the piston **down** hard",
+      "The **only** stroke that makes power"
+    ] },
     { "type": "heading", "text": "4. Exhaust (blow)" },
-    { "type": "text", "text": "The exhaust valve **opens** and the piston comes **up** again, pushing the burnt gas out to the exhaust pipe. Then intake starts again, over and over." },
-    { "type": "callout", "style": "math", "title": "Count the turns", "text": "Each stroke is half a crank turn. Four strokes = **2 full turns** of the crankshaft for every 1 power stroke." },
+    { "type": "list", "items": [
+      "Piston moves **up**",
+      "Exhaust valve **open**, intake valve closed",
+      "The piston pushes the **burnt gas** out the exhaust",
+      "Then intake starts again, over and over"
+    ] },
+    { "type": "list", "intro": "Counting the turns:", "items": [
+      "Each stroke = **half** a crank turn",
+      "Four strokes = **2 full turns** of the crankshaft",
+      "So you get **1 power stroke every 2 turns**"
+    ] },
     { "type": "math", "lines": ["4 strokes × ½ turn each = 2 turns", "At 3,000 RPM: 3,000 ÷ 2 = 1,500 power strokes a minute", "1,500 ÷ 60 = 25 bangs every second, per cylinder"], "say": "Four strokes times half a turn each is two turns. At three thousand R P M, that's fifteen hundred power strokes a minute, or twenty five bangs every second, in each cylinder." },
-    { "type": "callout", "style": "warn", "title": "So who pushes on the other three strokes?", "text": "A heavy wheel called the **flywheel** keeps spinning between bangs, like a merry-go-round you shoved once. Its momentum carries the piston through intake, compression and exhaust." },
+    { "type": "callout", "style": "warn", "title": "Who pushes on the other three strokes?", "text": "A heavy **flywheel** keeps spinning between bangs, like a merry-go-round you shoved once. Its momentum carries the piston through the other three strokes." },
     { "type": "quiz", "question": "Which stroke actually makes the power?", "options": ["Intake", "Compression", "Power", "Exhaust"], "answer": 2, "explain": "Only the power stroke pushes the piston. The other three use up a little energy, which the flywheel supplies." },
     { "type": "quiz", "question": "During compression, the valves are…", "options": ["Intake open, exhaust closed", "Both closed", "Both open", "Exhaust open, intake closed"], "answer": 1, "explain": "Both valves are shut so the mix has nowhere to go but get squeezed." },
     { "type": "quiz", "question": "How many crankshaft turns does one full 4-stroke cycle take?", "options": ["1", "2", "4", "½"], "answer": 1, "explain": "Four strokes, each half a turn: 2 turns." }

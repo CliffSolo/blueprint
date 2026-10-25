@@ -3,17 +3,31 @@
   "title": "The squeeze: size and compression",
   "minutes": 5,
   "blocks": [
-    { "type": "text", "text": "When someone says a car has a \"2.0 litre engine\", they're talking about **displacement**: how much space all the pistons sweep through on one stroke." },
+    { "type": "text", "text": "When someone says a car has a \"2.0 litre engine\", they mean its **displacement**." },
     { "type": "heading", "text": "Displacement" },
-    { "type": "text", "text": "Each cylinder is a tube. The volume one piston sweeps is the area of the tube's circle times how far the piston travels. The width of the tube is the **bore**, and how far the piston travels is the **stroke length**." },
+    { "type": "list", "intro": "Displacement is:", "items": [
+      "The space **all the pistons sweep** through on one stroke",
+      "**Bore:** the width of the cylinder",
+      "**Stroke length:** how far the piston travels",
+      "One cylinder's volume = circle area × stroke length"
+    ] },
     { "type": "math", "lines": ["Volume = π ÷ 4 × bore² × stroke", "Bore 8.6 cm, stroke 8.6 cm", "= 0.785 × 8.6 × 8.6 × 8.6", "≈ 500 cc (cubic centimetres) per cylinder", "4 cylinders × 500 cc = 2,000 cc = 2.0 litres"], "say": "Volume equals pi over four, times bore squared, times stroke. With a bore and stroke of eight point six centimetres, that's about five hundred cubic centimetres per cylinder. Four cylinders gives two thousand, which is two litres." },
     { "type": "heading", "text": "Compression ratio" },
-    { "type": "text", "text": "When the piston is at the top, there's still a small pocket of space left above it. That's the **clearance volume** (Vc). The **compression ratio** compares the space at the bottom with the space at the top." },
+    { "type": "list", "intro": "Two volumes matter:", "items": [
+      "**Swept volume (Vs):** the space the piston sweeps",
+      "**Clearance volume (Vc):** the small pocket left above the piston at the top",
+      "**Compression ratio:** space at the bottom ÷ space at the top"
+    ] },
     { "type": "math", "lines": ["CR = (swept + clearance) ÷ clearance", "CR = (Vs + Vc) ÷ Vc", "Vs = 500 cc, Vc = 50 cc", "CR = (500 + 50) ÷ 50 = 11, written 11 : 1"], "say": "Compression ratio equals swept volume plus clearance volume, divided by clearance volume. With five hundred and fifty, that's five hundred and fifty divided by fifty, which is eleven to one." },
     { "type": "lab", "src": "labs/compression.html", "params": "cr=10", "height": 620, "caption": "Drag the ratio. Watch the gas get crowded and the pressure climb.", "narration": "Drag the ratio slider. A higher ratio leaves less room at the top, so the same gas gets squeezed harder, hotter and to a higher pressure." },
-    { "type": "callout", "style": "tip", "title": "Higher = more efficient…", "text": "A harder squeeze gets more push out of the same fuel. That's why engineers keep pushing compression ratios up." },
-    { "type": "callout", "style": "warn", "title": "…until it knocks", "text": "Squeeze too hard and the mix gets so hot it lights **by itself**, before the spark, with a sharp pinging sound called **knock**. Knock can wreck pistons. Higher-octane (premium) fuel resists it, which is why high-compression engines ask for premium." },
-    { "type": "callout", "style": "example", "title": "Diesels", "text": "Diesel engines use knock on purpose. They squeeze plain air to around 15–20 : 1, until it's hot enough to light fuel sprayed in at the top. No spark plug needed." },
+    { "type": "list", "intro": "Higher compression:", "items": [
+      "**Good:** more push from the same fuel, so better efficiency",
+      "**Risk:** the mix gets so hot it can light **by itself**, before the spark",
+      "That early burn is **knock**: a sharp pinging that can wreck pistons",
+      "**Higher-octane** (premium) fuel resists knock",
+      "That's why high-compression engines ask for premium"
+    ] },
+    { "type": "callout", "style": "example", "title": "Diesels", "text": "Diesels use self-lighting on purpose. They squeeze plain air to about **15–20 : 1** until it's hot enough to light the fuel sprayed in. No spark plug needed." },
     { "type": "quiz", "question": "Swept volume 450 cc, clearance volume 50 cc. What's the compression ratio?", "options": ["9 : 1", "10 : 1", "11 : 1", "450 : 1"], "answer": 1, "explain": "(450 + 50) ÷ 50 = 500 ÷ 50 = 10, so 10 : 1." },
     { "type": "quiz", "question": "A 4-cylinder engine has 400 cc per cylinder. What's its displacement?", "options": ["0.4 L", "1.6 L", "2.0 L", "4.0 L"], "answer": 1, "explain": "4 × 400 cc = 1,600 cc = 1.6 litres." },
     { "type": "quiz", "question": "What is engine knock?", "options": ["The valves hitting their seats", "The mix lighting by itself before the spark because it got too hot", "A loose exhaust pipe", "The flywheel slowing down"], "answer": 1, "explain": "Too much squeeze makes the mix so hot it self-ignites early. Higher-octane fuel resists it." }
