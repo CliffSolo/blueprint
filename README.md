@@ -7,10 +7,11 @@ Blueprint is a native Android learning app. Every topic is a short course, calle
 
 New topics show up on their own. Each course lives in its own public GitHub repo, and the app finds and downloads new ones in the background.
 
-<!-- Screenshots: drop PNGs into docs/screenshots/ with these names. -->
-| Library | Lesson + live lab | Step-through lab | Quick check | Voices |
-|---|---|---|---|---|
-| ![Library](docs/screenshots/library.png) | ![Lesson](docs/screenshots/lesson-lab.png) | ![Steps](docs/screenshots/step-lab.png) | ![Quiz](docs/screenshots/quiz.png) | ![Voices](docs/screenshots/voices.png) |
+| Library | Course | Lesson + live lab | Firing-order lab | Quick check | Voices |
+|---|---|---|---|---|---|
+| ![Library](docs/screenshots/library.png) | ![Course](docs/screenshots/course.png) | ![Lesson](docs/screenshots/lesson-lab.png) | ![Cylinders lab](docs/screenshots/cylinders-lab.png) | ![Quiz](docs/screenshots/quiz.png) | ![Voices](docs/screenshots/voices.png) |
+
+*Screenshots from a Pixel 9 Pro XL (Android 17) in dark mode.*
 
 > Demo course: [How a 4-Stroke Engine Works](https://github.com/CliffSolo/blueprint-4-stroke-engine), 5 lessons, 4 animated labs, ~25 min.
 
