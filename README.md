@@ -96,3 +96,7 @@ Every push to `main` runs the tests and builds the APK in GitHub Actions. The AP
 ## Built with AI
 
 Designed and directed by [CliffSolo](https://github.com/CliffSolo); code and course content written with [Claude Code](https://claude.com/claude-code).
+
+## License
+
+[MIT](LICENSE)
