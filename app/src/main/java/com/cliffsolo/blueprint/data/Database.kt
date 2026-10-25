@@ -10,6 +10,8 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "lesson_progress", primaryKeys = ["courseId", "lessonId"])
@@ -28,11 +30,11 @@ data class CourseState(
     val lastOpenedAt: Long,
 )
 
-/** One row per GitHub repo we've downloaded, so sync only re-downloads repos that changed. */
-@Entity(tableName = "synced_repo")
-data class SyncedRepo(
-    @PrimaryKey val repo: String,
-    val pushedAt: String,
+/** One row per downloaded course folder; [sha] is its git tree SHA, so sync only re-downloads folders that changed. */
+@Entity(tableName = "synced_course")
+data class SyncedCourse(
+    @PrimaryKey val dir: String,
+    val sha: String,
     val installedAt: Long,
 )
 
@@ -59,20 +61,28 @@ interface ProgressDao {
 
 @Dao
 interface SyncDao {
-    @Query("SELECT * FROM synced_repo")
-    suspend fun all(): List<SyncedRepo>
+    @Query("SELECT * FROM synced_course")
+    suspend fun all(): List<SyncedCourse>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(repo: SyncedRepo)
+    suspend fun save(course: SyncedCourse)
 }
 
-@Database(entities = [LessonProgress::class, CourseState::class, SyncedRepo::class], version = 1, exportSchema = false)
+@Database(entities = [LessonProgress::class, CourseState::class, SyncedCourse::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun progress(): ProgressDao
     abstract fun sync(): SyncDao
 
     companion object {
+        /** 0.3.0: courses moved from one repo each into one repo's courses/ folder. Keeps lesson progress. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS synced_repo")
+                db.execSQL("CREATE TABLE IF NOT EXISTS synced_course (dir TEXT NOT NULL, sha TEXT NOT NULL, installedAt INTEGER NOT NULL, PRIMARY KEY(dir))")
+            }
+        }
+
         fun create(context: Context): AppDatabase =
-            Room.databaseBuilder(context, AppDatabase::class.java, "blueprint.db").build()
+            Room.databaseBuilder(context, AppDatabase::class.java, "blueprint.db").addMigrations(MIGRATION_1_2).build()
     }
 }

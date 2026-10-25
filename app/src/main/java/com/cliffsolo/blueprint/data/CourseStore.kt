@@ -23,7 +23,7 @@ data class InstalledCourse(val manifest: CourseManifest, val source: CourseSourc
 
 /**
  * Finds every course on the phone. Bundled courses ship inside the APK under assets/courses/;
- * synced courses are unzipped into files/courses/. A downloaded copy wins over a bundled one with the same id.
+ * synced courses are downloaded into files/courses/. A downloaded copy wins over a bundled one with the same id.
  */
 class CourseStore(private val context: Context) {
     val downloadRoot: File get() = File(context.filesDir, "courses").apply { mkdirs() }

@@ -1,3 +1,11 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -13,8 +21,8 @@ android {
         applicationId = "com.cliffsolo.blueprint"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     buildTypes {
@@ -30,6 +38,36 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+/** Copies the demo course from courses/ into the APK's assets, so the app works offline on first launch. */
+abstract class BundleDemoCourse : DefaultTask() {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val courseDir: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun bundle() {
+        val src = courseDir.get().asFile
+        val dest = outputDir.get().asFile.resolve("courses/${src.name}")
+        outputDir.get().asFile.deleteRecursively()
+        dest.mkdirs()
+        src.resolve("course.json").copyTo(dest.resolve("course.json"))
+        for (dir in listOf("lessons", "labs")) src.resolve(dir).copyRecursively(dest.resolve(dir))
+    }
+}
+
+val bundleDemoCourse = tasks.register<BundleDemoCourse>("bundleDemoCourse") {
+    courseDir.set(rootProject.layout.projectDirectory.dir("courses/4-stroke-engine"))
+    outputDir.set(layout.buildDirectory.dir("generated/demoCourse"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(bundleDemoCourse, BundleDemoCourse::outputDir)
     }
 }
 

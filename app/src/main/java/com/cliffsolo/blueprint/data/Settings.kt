@@ -22,13 +22,13 @@ data class AppSettings(
     val voices: Map<VoiceRole, String> = emptyMap(),
     val rate: Float = 1.0f,
     val pitch: Float = 1.0f,
-    val githubOwner: String = DEFAULT_OWNER,
+    val courseRepo: String = DEFAULT_REPO,
     val autoSync: Boolean = true,
     val followAlong: Boolean = true,
 ) {
     companion object {
-        const val DEFAULT_OWNER = "CliffSolo"
-        const val COURSE_TOPIC = "blueprint-course"
+        /** The public repo whose courses/ folder holds every course. */
+        const val DEFAULT_REPO = "CliffSolo/blueprint"
     }
 }
 
@@ -38,7 +38,7 @@ class SettingsRepo(private val context: Context) {
     private fun voiceKey(role: VoiceRole) = stringPreferencesKey("voice_${role.name}")
     private val rateKey = floatPreferencesKey("rate")
     private val pitchKey = floatPreferencesKey("pitch")
-    private val ownerKey = stringPreferencesKey("github_owner")
+    private val repoKey = stringPreferencesKey("course_repo")
     private val autoSyncKey = booleanPreferencesKey("auto_sync")
     private val followKey = booleanPreferencesKey("follow_along")
 
@@ -50,7 +50,7 @@ class SettingsRepo(private val context: Context) {
         voices = VoiceRole.entries.mapNotNull { role -> this[voiceKey(role)]?.let { role to it } }.toMap(),
         rate = this[rateKey] ?: 1.0f,
         pitch = this[pitchKey] ?: 1.0f,
-        githubOwner = this[ownerKey]?.takeIf { it.isNotBlank() } ?: AppSettings.DEFAULT_OWNER,
+        courseRepo = this[repoKey]?.takeIf { it.isNotBlank() } ?: AppSettings.DEFAULT_REPO,
         autoSync = this[autoSyncKey] ?: true,
         followAlong = this[followKey] ?: true,
     )
@@ -60,7 +60,7 @@ class SettingsRepo(private val context: Context) {
     }
     suspend fun setRate(v: Float) = context.dataStore.edit { it[rateKey] = v }
     suspend fun setPitch(v: Float) = context.dataStore.edit { it[pitchKey] = v }
-    suspend fun setOwner(v: String) = context.dataStore.edit { it[ownerKey] = v.trim() }
+    suspend fun setRepo(v: String) = context.dataStore.edit { it[repoKey] = v.trim() }
     suspend fun setAutoSync(v: Boolean) = context.dataStore.edit { it[autoSyncKey] = v }
     suspend fun setFollowAlong(v: Boolean) = context.dataStore.edit { it[followKey] = v }
 }

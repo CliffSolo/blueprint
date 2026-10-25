@@ -1,7 +1,7 @@
 
 # How a 4-Stroke Engine Works
 
-A [Blueprint](https://github.com/CliffSolo/blueprint) course: **suck, squeeze, bang, blow.**
+A [Blueprint](../../README.md) course: **suck, squeeze, bang, blow.**
 Watch a car engine turn fuel into motion, one stroke at a time. ~25 minutes, 5 lessons, 4 animated labs.
 
 <!-- Add docs/engine.gif (a short screen recording of labs/engine.html) for the hero image. -->
@@ -24,7 +24,7 @@ The labs are plain HTML with no dependencies. Open any file in `labs/` directly,
 
 ## Format
 
-`course.json` lists the lessons; each `lessons/*.json` is a list of blocks (text, callout, steps, math, lab, quiz). The repo is tagged `blueprint-course`, so the Blueprint app downloads it automatically.
+`course.json` lists the lessons; each `lessons/*.json` is a list of blocks (list, text, callout, steps, math, lab, quiz). This folder lives in the Blueprint repo's `courses/`, so the app downloads it automatically.
 
 ## The physics, simplified
 

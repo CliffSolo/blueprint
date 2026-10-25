@@ -9,20 +9,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 class CourseFormatTest {
 
     @Test
-    fun `every bundled course parses and its labs exist`() {
-        val root = File("src/main/assets/courses")
+    fun `every course in the repo parses and its labs exist`() {
+        val root = File("../courses")
         val courses = root.listFiles().orEmpty().filter { it.isDirectory }
-        assertTrue("expected at least one bundled course", courses.isNotEmpty())
+        assertTrue("expected at least one course", courses.isNotEmpty())
         for (dir in courses) {
             val manifest = CourseJson.manifest(File(dir, "course.json").readText())
             assertTrue(manifest.lessons.isNotEmpty())
@@ -78,14 +75,12 @@ class CourseFormatTest {
     }
 
     @Test
-    fun `unzip refuses entries that escape the folder`() {
-        val bytes = ByteArrayOutputStream().also { out ->
-            ZipOutputStream(out).use { z -> z.putNextEntry(ZipEntry("../evil.txt")); z.write(1); z.closeEntry() }
-        }.toByteArray()
-        val dest = Files.createTempDirectory("unzip").toFile()
+    fun `downloads refuse paths that escape the course folder`() {
+        val dest = Files.createTempDirectory("course").toFile()
         try {
-            GithubSync.unzip(bytes.inputStream(), dest)
-            fail("expected unsafe entry to be blocked")
+            assertEquals(File(dest, "labs/a.html").canonicalPath, GithubSync.safeChild(dest, "labs/a.html").canonicalPath)
+            GithubSync.safeChild(dest, "../evil.txt")
+            fail("expected unsafe path to be blocked")
         } catch (_: IOException) {
         } finally {
             dest.deleteRecursively()

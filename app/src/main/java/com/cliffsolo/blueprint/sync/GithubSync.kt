@@ -1,10 +1,9 @@
 package com.cliffsolo.blueprint.sync
 
-import com.cliffsolo.blueprint.data.AppSettings
 import com.cliffsolo.blueprint.data.CourseJson
 import com.cliffsolo.blueprint.data.CourseStore
 import com.cliffsolo.blueprint.data.SyncDao
-import com.cliffsolo.blueprint.data.SyncedRepo
+import com.cliffsolo.blueprint.data.SyncedCourse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -13,19 +12,15 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
-import java.util.zip.ZipInputStream
 
 @Serializable
-private data class SearchResult(val items: List<RepoInfo> = emptyList())
+data class RepoEntry(val name: String, val type: String, val sha: String)
 
 @Serializable
-data class RepoInfo(
-    val name: String,
-    val full_name: String,
-    val default_branch: String = "main",
-    val pushed_at: String = "",
-)
+private data class Tree(val tree: List<TreeEntry> = emptyList(), val truncated: Boolean = false)
+
+@Serializable
+private data class TreeEntry(val path: String, val type: String)
 
 data class SyncResult(val added: Int, val updated: Int, val failed: List<String>, val checked: Int) {
     val message: String
@@ -41,48 +36,55 @@ data class SyncResult(val added: Int, val updated: Int, val failed: List<String>
 }
 
 /**
- * Finds public repos owned by [AppSettings.githubOwner] tagged with the `blueprint-course` topic,
- * and downloads any that changed since the last sync. Public repos need no token.
+ * Courses live in one public repo, one folder each under `courses/`. Each folder's git tree SHA changes
+ * whenever anything inside it changes, so sync compares SHAs and only downloads folders that changed.
+ * Public repo: no token needed.
  */
 class GithubSync(private val store: CourseStore, private val dao: SyncDao) {
 
-    suspend fun sync(owner: String): SyncResult = withContext(Dispatchers.IO) {
-        val repos = findRepos(owner)
-        val known = dao.all().associateBy { it.repo }
+    suspend fun sync(repo: String): SyncResult = withContext(Dispatchers.IO) {
+        val folders = listCourses(repo)
+        val known = dao.all().associateBy { it.dir }
         var added = 0
         var updated = 0
         val failed = mutableListOf<String>()
-        for (repo in repos) {
-            val previous = known[repo.full_name]
-            val folder = File(store.downloadRoot, repo.name)
-            if (previous != null && previous.pushedAt == repo.pushed_at && folder.exists()) continue
-            runCatching { install(repo, folder) }
+        for (folder in folders) {
+            val previous = known[folder.name]
+            val target = File(store.downloadRoot, folder.name)
+            if (previous != null && previous.sha == folder.sha && target.exists()) continue
+            runCatching { install(repo, folder, target) }
                 .onSuccess {
-                    dao.save(SyncedRepo(repo.full_name, repo.pushed_at, System.currentTimeMillis()))
+                    dao.save(SyncedCourse(folder.name, folder.sha, System.currentTimeMillis()))
                     if (previous == null) added++ else updated++
                 }
-                .onFailure { failed += repo.name }
+                .onFailure { failed += folder.name }
         }
         store.refresh()
-        SyncResult(added, updated, failed, repos.size)
+        SyncResult(added, updated, failed, folders.size)
     }
 
-    private fun findRepos(owner: String): List<RepoInfo> {
-        val q = URLEncoder.encode("topic:${AppSettings.COURSE_TOPIC} user:$owner", "UTF-8")
-        val body = get("https://api.github.com/search/repositories?q=$q&per_page=100").use { it.bufferedReader().readText() }
-        return CourseJson.json.decodeFromString<SearchResult>(body).items
+    private fun listCourses(repo: String): List<RepoEntry> {
+        val body = get("https://api.github.com/repos/$repo/contents/$COURSES?ref=$BRANCH").use { it.bufferedReader().readText() }
+        return CourseJson.json.decodeFromString<List<RepoEntry>>(body).filter { it.type == "dir" }
     }
 
-    /** Downloads the repo as a zip, checks it has a valid course.json, then swaps it in. */
-    private fun install(repo: RepoInfo, target: File) {
-        val staging = File(store.downloadRoot.parentFile, "staging/${repo.name}").apply { deleteRecursively(); mkdirs() }
+    /** Downloads every file in one course folder, checks course.json, then swaps the folder in. */
+    private fun install(repo: String, folder: RepoEntry, target: File) {
+        val treeJson = get("https://api.github.com/repos/$repo/git/trees/${folder.sha}?recursive=1").use { it.bufferedReader().readText() }
+        val tree = CourseJson.json.decodeFromString<Tree>(treeJson)
+        if (tree.truncated) throw IOException("Course ${folder.name} is too big to list")
+        val staging = File(store.downloadRoot.parentFile, "staging/${folder.name}").apply { deleteRecursively(); mkdirs() }
         try {
-            get("https://codeload.github.com/${repo.full_name}/zip/refs/heads/${repo.default_branch}").use { unzip(it, staging) }
-            val root = staging.walkTopDown().maxDepth(2).firstOrNull { File(it, "course.json").isFile }
-                ?: throw IOException("No course.json in ${repo.name}")
-            CourseJson.manifest(File(root, "course.json").readText())
+            for (entry in tree.tree.filter { it.type == "blob" }) {
+                val out = safeChild(staging, entry.path)
+                out.parentFile?.mkdirs()
+                get("https://raw.githubusercontent.com/$repo/$BRANCH/$COURSES/${folder.name}/${entry.path}").use { input ->
+                    out.outputStream().use { input.copyTo(it) }
+                }
+            }
+            CourseJson.manifest(File(staging, "course.json").readText())
             target.deleteRecursively()
-            if (!root.renameTo(target)) root.copyRecursively(target, overwrite = true)
+            if (!staging.renameTo(target)) staging.copyRecursively(target, overwrite = true)
         } finally {
             staging.deleteRecursively()
         }
@@ -99,20 +101,14 @@ class GithubSync(private val store: CourseStore, private val dao: SyncDao) {
     }
 
     companion object {
-        /** Unzips [input] into [dest], refusing entries that would escape it ("zip slip"). */
-        fun unzip(input: InputStream, dest: File) {
-            val base = dest.canonicalPath + File.separator
-            ZipInputStream(input.buffered()).use { zip ->
-                generateSequence { zip.nextEntry }.forEach { entry ->
-                    val out = File(dest, entry.name)
-                    if (!out.canonicalPath.startsWith(base)) throw IOException("Blocked unsafe zip entry: ${entry.name}")
-                    if (entry.isDirectory) out.mkdirs()
-                    else {
-                        out.parentFile?.mkdirs()
-                        out.outputStream().use { zip.copyTo(it) }
-                    }
-                }
-            }
+        const val COURSES = "courses"
+        const val BRANCH = "main"
+
+        /** Resolves [path] inside [dir], refusing paths that would escape it (e.g. "../x"). */
+        fun safeChild(dir: File, path: String): File {
+            val out = File(dir, path)
+            if (!out.canonicalPath.startsWith(dir.canonicalPath + File.separator)) throw IOException("Blocked unsafe path: $path")
+            return out
         }
     }
 }

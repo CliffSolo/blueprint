@@ -16,3 +16,10 @@
 - New `list` lesson block: an intro line plus bullet points, read aloud one bullet at a time with highlighting. Courses now explain topics with bullet lists instead of paragraphs.
 - Demo course updated to 1.1.0 (bullet-list lessons).
 - Phone screenshots added to the README.
+
+## 0.3.0 · 2026-10-25
+- One repo for everything: courses now live in `courses/<topic>/`; the 4-stroke engine course history was merged in.
+- Sync reads the repo's `courses/` folder and downloads only folders whose git tree SHA changed (no zip, no topic search).
+- Demo course is bundled into the APK at build time from `courses/` (no duplicate copy in the source tree).
+- Database migration 1→2 keeps lesson progress when updating from 0.2.0 (tested upgrade on the emulator).
+- Settings: "Course repo" (owner/name) replaces "GitHub account".

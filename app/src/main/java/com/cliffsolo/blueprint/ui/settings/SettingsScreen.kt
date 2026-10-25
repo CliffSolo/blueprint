@@ -59,7 +59,7 @@ fun SettingsScreen(app: BlueprintApp, onBack: () -> Unit) {
     val voices by app.narrator.voices.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var picking by remember { mutableStateOf<VoiceRole?>(null) }
-    var owner by remember(s.githubOwner) { mutableStateOf(s.githubOwner) }
+    var repo by remember(s.courseRepo) { mutableStateOf(s.courseRepo) }
     val colors = MaterialTheme.colorScheme
 
     Scaffold(
@@ -113,19 +113,19 @@ fun SettingsScreen(app: BlueprintApp, onBack: () -> Unit) {
             }
             item {
                 OutlinedTextField(
-                    value = owner, onValueChange = { owner = it },
-                    label = { Text("GitHub account to load courses from") },
-                    supportingText = { Text("Public repos tagged \"${AppSettings.COURSE_TOPIC}\". No sign-in needed.") },
+                    value = repo, onValueChange = { repo = it },
+                    label = { Text("Course repo on GitHub") },
+                    supportingText = { Text("Public repo, owner/name. Courses live in its courses/ folder. No sign-in needed.") },
                     singleLine = true, modifier = Modifier.fillMaxWidth(),
                 )
-                TextButton(onClick = { scope.launch { app.settings.setOwner(owner) } }, enabled = owner.isNotBlank() && owner != s.githubOwner) {
+                TextButton(onClick = { scope.launch { app.settings.setRepo(repo) } }, enabled = "/" in repo && repo != s.courseRepo) {
                     Text("Save")
                 }
             }
             item { Section("ABOUT") }
             item {
                 Text(
-                    "Blueprint 0.2.0 · Kotlin + Jetpack Compose. Courses are open source on GitHub; labs run offline once downloaded.",
+                    "Blueprint 0.3.0 · Kotlin + Jetpack Compose. Courses are open source on GitHub; labs run offline once downloaded.",
                     style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
                 )
             }

@@ -17,7 +17,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
         val app = applicationContext as BlueprintApp
         val settings = app.settings.current()
         if (!settings.autoSync) return Result.success()
-        return runCatching { app.sync.sync(settings.githubOwner) }
+        return runCatching { app.sync.sync(settings.courseRepo) }
             .fold({ Result.success() }, { if (runAttemptCount < 3) Result.retry() else Result.failure() })
     }
 

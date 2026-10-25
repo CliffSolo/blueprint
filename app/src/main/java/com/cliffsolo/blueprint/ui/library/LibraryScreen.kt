@@ -77,7 +77,7 @@ class LibraryViewModel(private val app: BlueprintApp) : ViewModel() {
         if (syncing.value) return
         viewModelScope.launch {
             syncing.value = true
-            message.value = runCatching { app.sync.sync(app.settings.current().githubOwner).message }
+            message.value = runCatching { app.sync.sync(app.settings.current().courseRepo).message }
                 .getOrElse { "Couldn't reach GitHub. Your courses still work offline." }
             syncing.value = false
         }

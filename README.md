@@ -5,7 +5,7 @@
 
 Blueprint is a native Android learning app. Every topic is a short course, called a *blueprint*, built around live, interactive animations: a cutaway engine you can slow down, gears you can re-ratio, a valve-timing wheel you can drag through the RPM range. Lessons can be read aloud in the voice you choose, with each word highlighted as it's spoken.
 
-New topics show up on their own. Each course lives in its own public GitHub repo, and the app finds and downloads new ones in the background.
+New topics show up on their own. Every course lives in this repo's [`courses/`](courses) folder, and the app downloads new and updated ones in the background.
 
 | Library | Course | Lesson + live lab | Firing-order lab | Quick check | Voices |
 |---|---|---|---|---|---|
@@ -13,7 +13,13 @@ New topics show up on their own. Each course lives in its own public GitHub repo
 
 *Screenshots from a Pixel 9 Pro XL (Android 17) in dark mode.*
 
-> Demo course: [How a 4-Stroke Engine Works](https://github.com/CliffSolo/blueprint-4-stroke-engine), 5 lessons, 4 animated labs, ~25 min.
+## Courses
+
+| Course | Length | Labs |
+|---|---|---|
+| [How a 4-Stroke Engine Works](courses/4-stroke-engine) (demo, bundled in the app) | ~25 min · 5 lessons | Engine cutaway, valve timing, compression ratio, firing order |
+
+More on the way: wing lift, pin-tumbler locks, gears, WW2 bomber navigation, discrete math, function reading.
 
 ## Features
 
@@ -22,17 +28,18 @@ New topics show up on their own. Each course lives in its own public GitHub repo
 - **Follow along:** the lesson scrolls to whatever is being read.
 - **Quick checks:** multiple-choice questions with instant feedback and explanations. Scores are saved per lesson.
 - **Progress:** lessons tick off as you finish them; "Continue" picks up where you left off.
-- **Self-updating library:** courses are public repos tagged `blueprint-course`. The app checks GitHub a few times a day (WorkManager, network-only) and downloads only repos that changed. No account or token needed.
-- **Offline-first:** a demo course ships inside the APK; everything downloaded stays on the phone.
+- **Self-updating library:** courses are folders in this public repo. The app checks GitHub a few times a day (WorkManager, network-only) and downloads only the course folders that changed. No account or token needed.
+- **Bullet-first lessons:** topics are explained as short intro lines plus bullet lists, read aloud one bullet at a time.
+- **Offline-first:** the demo course is bundled into the APK at build time; everything downloaded stays on the phone.
 - **Light and dark** "blueprint paper" themes, edge-to-edge.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    T["Topic idea<br/>(e.g. rocket engines)"] --> C["Course repo<br/>course.json + lessons + labs"]
-    C -->|tagged blueprint-course| GH[(GitHub)]
-    GH -->|Search API + zip download<br/>WorkManager, every 12 h| S[GithubSync]
+    T["Topic idea<br/>(e.g. rocket engines)"] --> C["courses/&lt;topic&gt;/<br/>course.json + lessons + labs"]
+    C -->|git push| GH[(GitHub repo)]
+    GH -->|contents + tree API, raw files<br/>WorkManager, every 12 h| S[GithubSync]
     S --> F["files/courses/<br/>(on the phone)"]
     A["APK assets<br/>(bundled demo)"] --> CS[CourseStore]
     F --> CS
@@ -48,15 +55,15 @@ flowchart LR
 |---|---|
 | `data/Models.kt` | Course format: `CourseManifest`, `Lesson`, and a sealed `Block` type (text, callout, steps, math, lab, quiz, code). Unknown block types degrade to `Unsupported`, so old app versions can still open newer courses. |
 | `data/CourseStore.kt` | Finds bundled and downloaded courses; a downloaded copy overrides a bundled one with the same id. |
-| `data/Database.kt` | Room: lesson progress, last-opened lesson, and which repo versions are installed. |
-| `sync/GithubSync.kt` | Topic search → compare `pushed_at` → download zip → validate `course.json` → swap in. Guards against zip-slip. |
+| `data/Database.kt` | Room: lesson progress, last-opened lesson, and which course versions are installed, with a schema migration that keeps progress across updates. |
+| `sync/GithubSync.kt` | List `courses/` → compare each folder's git tree SHA → download only changed folders → validate `course.json` → swap in. Refuses paths that escape the course folder. |
 | `tts/Narrator.kt` | Speaks one utterance at a time so it can switch voices per role, skip, pause and resume; exposes word ranges for highlighting. |
 | `ui/…` | Jetpack Compose + Material 3 screens with ViewModels and `StateFlow`. Labs are served from a fake `https://appassets.androidplatform.net` origin, so they behave like normal web pages without file access. |
 
 ### Design decisions
 
 - **Native shell, web labs.** Screens, storage, sync and speech are native Kotlin. The animations are small HTML canvas labs, the best tool for 2-D motion graphics, and the same files work in any browser, so each course repo doubles as a website.
-- **One repo per course.** Courses update without an app release, each one has its own history and README, and a course can be shared on its own.
+- **One repo, a folder per course.** Everything lives in one place, while each course still updates without an app release. Sync uses each folder's git tree SHA, so only courses that changed are downloaded.
 - **Spoken text = displayed text.** The inline markdown parser strips markers identically for display and speech, so the TTS engine's character ranges line up with the screen. There's a unit test for it.
 - **No icon library.** The ten icons the app needs are defined as vector paths, which keeps the APK lean.
 
@@ -64,16 +71,20 @@ flowchart LR
 
 Kotlin · Jetpack Compose · Material 3 · Navigation Compose · Room (KSP) · DataStore · WorkManager · kotlinx.serialization · AndroidX WebKit · Android TextToSpeech · GitHub REST API · GitHub Actions
 
-## Course format
+## Repo layout
 
 ```
-blueprint-<topic>/
-├── course.json        # id, title, minutes, accent colour, lesson list
-├── lessons/*.json     # blocks: text, heading, callout, steps, math, lab, quiz, code
-└── labs/*.html        # self-contained animated labs (+ shared kit.js / kit.css)
+blueprint/
+├── app/                      # Android app (Kotlin, Compose)
+├── courses/
+│   └── <topic>/
+│       ├── course.json       # id, title, minutes, accent colour, lesson list
+│       ├── lessons/*.json    # blocks: list, text, heading, callout, steps, math, lab, quiz, code
+│       └── labs/*.html       # self-contained animated labs (+ shared kit.js / kit.css)
+└── docs/screenshots/
 ```
 
-Tag the repo with the `blueprint-course` topic and the app picks it up.
+Add a folder under `courses/`, push, and every installed app picks it up.
 
 ## Build
 
@@ -81,8 +92,7 @@ Requires JDK 17 and the Android SDK (compileSdk 37).
 
 ```bash
 ./gradlew testDebugUnitTest   # unit tests
-./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk
-tools/bundle-demo.sh          # refresh the bundled demo course from ../blueprint-4-stroke-engine
+./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk (bundles courses/4-stroke-engine)
 ```
 
 Every push to `main` runs the tests and builds the APK in GitHub Actions. The APK is attached to the workflow run.
@@ -90,6 +100,8 @@ Every push to `main` runs the tests and builds the APK in GitHub Actions. The AP
 ## Roadmap
 
 - More blueprints: wing lift, pin-tumbler locks, gears, WW2 bomber navigation, discrete math, function reading
+- Library grouped by category
+- Choice of AI voices
 - Code walk-through lessons with line-by-line narration
 - Signed releases on the Releases page
 - Full-screen lab mode
