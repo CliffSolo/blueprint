@@ -31,3 +31,7 @@ The labs are plain HTML with no dependencies. Open any file in `labs/` directly,
 - Piston position uses the real slider-crank formula: `y = r·cos θ + √(L² − r²·sin² θ)`.
 - Compression pressure and temperature use the squeeze-without-burning rule: `P = CR^1.3` bar, `T = 300 K × CR^0.3`.
 - The push-on-crank graph is a simplified torque curve, accurate in shape (power stroke positive, others dragging), not in exact numbers.
+
+## License
+
+[MIT](LICENSE)
