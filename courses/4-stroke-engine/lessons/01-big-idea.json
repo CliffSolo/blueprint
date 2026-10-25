@@ -1,0 +1,34 @@
+{
+  "id": "01-big-idea",
+  "title": "The big idea",
+  "minutes": 4,
+  "blocks": [
+    { "type": "text", "text": "Ever popped a balloon? That bang is air pushing outward, hard and fast. An engine makes that push happen **thousands of times a minute**." },
+    { "type": "list", "intro": "The whole job of an engine is:", "items": [
+      "**Burn** fuel",
+      "**Make** hot, high-pressure gas",
+      "**Push** a piston with that gas",
+      "**Turn** the push into spin"
+    ] },
+    { "type": "lab", "src": "labs/engine.html", "params": "mode=full", "height": 470, "caption": "A single-cylinder engine, cut open. Tap pause any time.", "narration": "Watch the piston slide up and down inside the cylinder, while the crankshaft at the bottom spins round and round." },
+    { "type": "list", "intro": "The main parts of an engine are:", "items": [
+      "**Cylinder:** a tube where everything happens",
+      "**Piston:** a plug that slides up and down in the tube",
+      "**Connecting rod:** links the piston to the crankshaft",
+      "**Crankshaft:** the bent shaft that turns up-and-down into round-and-round",
+      "**Intake valve:** a door that lets air and fuel in",
+      "**Exhaust valve:** a door that lets burnt gas out",
+      "**Spark plug:** makes a tiny lightning bolt to light the fuel"
+    ] },
+    { "type": "callout", "style": "example", "title": "Everyday example", "text": "Pedalling a bike is the same trick. Your legs push **down** in a straight line, and the cranks turn that into a **circle**. The crankshaft is the engine's pedal crank." },
+    { "type": "list", "intro": "Words you'll hear a lot:", "items": [
+      "**Stroke:** one trip of the piston, top to bottom or bottom to top",
+      "**Top dead centre:** the very top of the piston's travel",
+      "**Bottom dead centre:** the very bottom of the piston's travel",
+      "At both dead centres the piston **stops for an instant** before turning around"
+    ] },
+    { "type": "callout", "style": "tip", "title": "Why \"4-stroke\"?", "text": "It takes **four** strokes to do the full job once. That's the next lesson." },
+    { "type": "quiz", "question": "Which part turns the piston's up-and-down motion into spinning?", "options": ["Spark plug", "Crankshaft", "Intake valve", "Cylinder"], "answer": 1, "explain": "The crankshaft does it, just like bike pedal cranks turn your legs' push into a circle." },
+    { "type": "quiz", "question": "What is one \"stroke\"?", "options": ["One full turn of the crankshaft", "One spark", "One trip of the piston from top to bottom, or bottom to top", "One drop of fuel"], "answer": 2, "explain": "A stroke is one trip of the piston between top dead centre and bottom dead centre. Two strokes = one crank turn." }
+  ]
+}

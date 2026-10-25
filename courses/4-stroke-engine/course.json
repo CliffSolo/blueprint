@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "id": "4-stroke-engine",
+  "title": "How a 4-Stroke Engine Works",
+  "subtitle": "Suck, squeeze, bang, blow",
+  "description": "Watch a car engine turn fuel into motion, one stroke at a time. Pistons, valves, timing, compression and why four cylinders run smoother than one.",
+  "minutes": 25,
+  "version": "1.1.0",
+  "updated": "2026-10-25",
+  "accent": "#E8833A",
+  "tags": ["demo", "mechanical"],
+  "lessons": [
+    { "id": "01-big-idea", "title": "The big idea", "minutes": 4, "file": "lessons/01-big-idea.json" },
+    { "id": "02-four-strokes", "title": "Four strokes, one at a time", "minutes": 6, "file": "lessons/02-four-strokes.json" },
+    { "id": "03-valves-timing", "title": "Valves and timing", "minutes": 6, "file": "lessons/03-valves-timing.json" },
+    { "id": "04-compression", "title": "The squeeze: size and compression", "minutes": 5, "file": "lessons/04-compression.json" },
+    { "id": "05-cylinders", "title": "More cylinders, smoother power", "minutes": 4, "file": "lessons/05-cylinders.json" }
+  ]
+}

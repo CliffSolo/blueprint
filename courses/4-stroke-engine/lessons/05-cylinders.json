@@ -1,0 +1,38 @@
+{
+  "id": "05-cylinders",
+  "title": "More cylinders, smoother power",
+  "minutes": 4,
+  "blocks": [
+    { "type": "list", "intro": "The problem with one cylinder:", "items": [
+      "It only pushes on **1 stroke out of 4**",
+      "The rest of the time the crank **coasts** on the flywheel",
+      "That's why a lawnmower goes **thump-thump-thump**"
+    ] },
+    { "type": "list", "intro": "The fix:", "items": [
+      "Add **more cylinders**",
+      "Give each one a **different turn** to fire",
+      "The bangs **overlap**, so the push never really stops"
+    ] },
+    { "type": "lab", "src": "labs/cylinders.html", "params": "n=1", "height": 480, "caption": "Switch between 1, 2 and 4 cylinders. Watch the push graph fill in.", "narration": "Start with one cylinder and watch the push graph. Then switch to four and see how the gaps disappear." },
+    { "type": "heading", "text": "Firing order" },
+    { "type": "list", "intro": "In a common inline-four engine:", "items": [
+      "Cylinders fire **1, 3, 4, 2**, not 1, 2, 3, 4",
+      "Pistons **1 and 4** move together",
+      "Pistons **2 and 3** move together",
+      "Alternating ends keeps the crankshaft **balanced**"
+    ] },
+    { "type": "math", "lines": ["1 cylinder: 1 power stroke every 2 turns", "4 cylinders: 4 power strokes every 2 turns", "= 2 power strokes every turn, one every 180°"], "say": "One cylinder gives one power stroke every two turns. Four cylinders give four every two turns, which is two every turn, or one every hundred and eighty degrees." },
+    { "type": "callout", "style": "example", "title": "Hear it", "text": "A V8 sounds like a smooth rumble; a single-cylinder dirt bike sounds like a machine gun. More cylinders = more, smaller bangs, closer together." },
+    { "type": "heading", "text": "Recap" },
+    { "type": "list", "items": [
+      "Fuel + air burn → hot gas → pressure pushes the piston",
+      "The crankshaft turns the push into spin",
+      "Four strokes: intake, compression, power, exhaust. Two crank turns.",
+      "The camshaft opens the valves at half crank speed",
+      "Higher compression = more efficient, until it knocks",
+      "More cylinders firing in turns = smoother power"
+    ] },
+    { "type": "quiz", "question": "A common firing order for an inline-four is…", "options": ["1-2-3-4", "1-3-4-2", "4-3-2-1", "1-4-2-3"], "answer": 1, "explain": "1-3-4-2 alternates between the ends of the engine to keep the crankshaft balanced." },
+    { "type": "quiz", "question": "In a 4-cylinder engine, how many power strokes happen per crankshaft turn?", "options": ["1", "2", "4", "½"], "answer": 1, "explain": "4 power strokes over 2 turns = 2 per turn, one every 180°." }
+  ]
+}
