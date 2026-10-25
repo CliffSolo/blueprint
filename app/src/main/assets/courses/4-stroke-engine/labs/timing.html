@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valve Timing</title>
+<link rel="stylesheet" href="kit.css">
+</head>
+<body>
+<header class="top"><span id="pill" class="pill">Intake</span><span id="read" class="read mono"></span></header>
+<canvas id="c" aria-label="Crank and cam gears turning, with a valve timing wheel"></canvas>
+<p id="explain" class="explain"></p>
+<div class="controls">
+  <button id="play" class="btn primary"></button>
+  <div class="seg" role="group" aria-label="Timing"><button id="ideal" class="on">Ideal</button><button id="real">Real</button></div>
+  <label class="slider">RPM <input id="rpm" type="range" min="1000" max="6000" step="500" value="2000"><span id="rv" class="mono">2000</span></label>
+</div>
+<script src="kit.js"></script>
+<script>
+// The camshaft turns once per cycle (half crank speed). The wheel below is one full cam turn = 720 crank degrees.
+// "Real" timing opens valves early and closes them late, so both are open around the top: valve overlap.
+const { C, stage, alpha, rr, txt, playButton } = Kit;
+const W = 360, H = 420;
+const WX = 180, WY = 296;   // timing wheel centre
+const STROKES = [['Intake', C.intake], ['Compression', C.comp], ['Power', C.power], ['Exhaust', C.exhaust]];
+const TIMING = {
+  ideal: { io: 0, ic: 180, eo: 540, ec: 720 },
+  real:  { io: 708, ic: 220, eo: 500, ec: 732 },   // intake opens 12° before top, closes 40° after bottom, etc.
+};
+let mode = 'ideal', rpm = 2000, theta = 0, playing = true;
+
+const norm = a => ((a % 720) + 720) % 720;
+const inArc = (th, a, b) => { th = norm(th); a = norm(a); b = norm(b); return a <= b ? th >= a && th < b : th >= a || th < b; };
+const advance = () => Math.round(6 + (rpm - 1000) / 5000 * 28);   // spark advance grows with RPM
+const ang = cyc => -Math.PI / 2 + norm(cyc) / 720 * Math.PI * 2;
+
+function gear(ctx, x, y, rad, teeth, rot, color, name, turns) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.fillStyle = color; ctx.strokeStyle = C.ink; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < teeth; i++) {
+    const a0 = i / teeth * Math.PI * 2, a1 = (i + 0.5) / teeth * Math.PI * 2, step = Math.PI / teeth * 0.35;
+    ctx.lineTo(Math.cos(a0) * rad, Math.sin(a0) * rad);
+    ctx.lineTo(Math.cos(a0 + step) * (rad + 5), Math.sin(a0 + step) * (rad + 5));
+    ctx.lineTo(Math.cos(a1 - step) * (rad + 5), Math.sin(a1 - step) * (rad + 5));
+    ctx.lineTo(Math.cos(a1) * rad, Math.sin(a1) * rad);
+  }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.panel; ctx.beginPath(); ctx.arc(0, 0, rad * 0.55, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.power; ctx.beginPath(); ctx.arc(0, -rad * 0.75, 4, 0, 7); ctx.fill();   // timing mark
+  ctx.restore();
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fill();
+  txt(ctx, name, x, y + rad + 16, { align: 'center', size: 11, weight: 700 });
+  txt(ctx, `${teeth} teeth · ${turns.toFixed(2)} turns`, x, y + rad + 30, { align: 'center', size: 10, color: C.muted, mono: true });
+}
+
+function belt(ctx, x1, r1, x2, r2, y) {
+  // Outer tangents of two circles on the same line.
+  const d = x2 - x1, a = Math.asin((r2 - r1) / d);
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 3;
+  for (const s of [-1, 1]) {
+    const nx = -Math.sin(a) * 1, ny = Math.cos(a) * s;
+    ctx.beginPath();
+    ctx.moveTo(x1 + nx * (r1 + 6) * s * s, y + ny * (r1 + 6));
+    ctx.lineTo(x2 + nx * (r2 + 6), y + ny * (r2 + 6));
+    ctx.stroke();
+  }
+}
+
+function arc(ctx, r, a, b, width, color) {
+  if (norm(b) <= norm(a) && b !== a) b = norm(b) + 720; else b = norm(b) === 0 && b !== 0 ? 720 : b;
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'butt';
+  ctx.beginPath(); ctx.arc(WX, WY, r, ang(a), ang(a) + (b - norm(a)) / 720 * Math.PI * 2); ctx.stroke();
+}
+
+function draw(ctx, dt) {
+  if (playing) theta += 80 * dt;
+  const th = norm(theta), t = TIMING[mode];
+  const intakeOpen = inArc(th, t.io, t.ic), exhaustOpen = inArc(th, t.eo, t.ec);
+  const spark = 360 - advance();
+
+  // Gears: the crank gear has half the teeth, so the cam turns once for every two crank turns.
+  belt(ctx, 92, 24, 262, 46, 70);
+  gear(ctx, 92, 70, 24, 20, theta * Math.PI / 180, C.metal2, 'Crankshaft', theta / 360);
+  gear(ctx, 262, 70, 46, 40, theta / 2 * Math.PI / 180, C.metal, 'Camshaft', theta / 720);
+
+  // Timing wheel: stroke quarters on the outside ring.
+  STROKES.forEach(([name, color], i) => {
+    arc(ctx, 92, i * 180 + 2, i * 180 + 178, 10, alpha(color, Math.floor(th / 180) === i ? 1 : 0.35));
+    const mid = ang(i * 180 + 90);
+    txt(ctx, name, WX + Math.cos(mid) * 122, WY + Math.sin(mid) * 104, { align: 'center', size: 10, weight: 700,
+      color: Math.floor(th / 180) === i ? C.ink : C.muted });
+  });
+  arc(ctx, 76, t.io, t.ic, 9, alpha(C.intake, intakeOpen ? 1 : 0.45));
+  arc(ctx, 62, t.eo, t.ec, 9, alpha(C.exhaust, exhaustOpen ? 1 : 0.5));
+  if (mode === 'real') {
+    ctx.fillStyle = alpha(C.fire, 0.35);
+    ctx.beginPath(); ctx.moveTo(WX, WY); ctx.arc(WX, WY, 100, ang(t.io), ang(t.ec)); ctx.closePath(); ctx.fill();
+  }
+  // Top / bottom markers.
+  txt(ctx, 'TOP', WX, WY - 108, { align: 'center', size: 9, weight: 700, color: C.muted });
+  txt(ctx, 'TOP', WX - 22, WY + 112, { align: 'center', size: 9, weight: 700, color: C.muted });
+  // Spark mark.
+  const sa = ang(spark);
+  ctx.strokeStyle = C.fire; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(WX + Math.cos(sa) * 86, WY + Math.sin(sa) * 86); ctx.lineTo(WX + Math.cos(sa) * 100, WY + Math.sin(sa) * 100); ctx.stroke();
+  txt(ctx, '⚡', WX + Math.cos(sa) * 110, WY + Math.sin(sa) * 110, { align: 'center', size: 12 });
+  // Pointer (cam angle).
+  const pa = ang(th);
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(WX, WY); ctx.lineTo(WX + Math.cos(pa) * 100, WY + Math.sin(pa) * 100); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(WX, WY, 5, 0, 7); ctx.fill();
+  // Legend.
+  txt(ctx, '● intake open', 6, 412, { size: 10, color: C.intake, weight: 700 });
+  txt(ctx, '● exhaust open', 354, 412, { size: 10, color: C.exhaust, weight: 700, align: 'right' });
+
+  const [name, color] = STROKES[Math.floor(th / 180)];
+  pill.textContent = name; pill.style.background = color;
+  read.textContent = `Crank ${Math.floor(th % 360)}° · cam ${Math.floor(th / 2)}°`;
+  let msg;
+  if (intakeOpen && exhaustOpen) msg = '<b>Overlap:</b> both valves open. The rushing exhaust helps pull the fresh mix in behind it.';
+  else if (Math.abs(th - spark) < 18 || (th > spark && th < 360)) msg = `<b>Spark!</b> ${advance()}° before the top. Burning takes time, so it starts early to peak just after the top.`;
+  else if (intakeOpen) msg = mode === 'real' && th > 180 ? '<b>Intake still open</b> past the bottom: the moving air keeps cramming in.' : '<b>Intake valve open:</b> fresh mix flows in.';
+  else if (exhaustOpen) msg = mode === 'real' && th < 540 && th > 400 ? '<b>Exhaust opens early,</b> before the bottom, to let the pressure out.' : '<b>Exhaust valve open:</b> burnt gas pushed out.';
+  else msg = '<b>Both valves closed.</b> The cylinder is sealed.';
+  explain.innerHTML = msg;
+}
+
+const $ = id => document.getElementById(id);
+const pill = $('pill'), read = $('read'), explain = $('explain');
+stage($('c'), W, H, draw);
+const play = $('play');
+playButton(play, playing);
+play.onclick = () => { playing = !playing; playButton(play, playing); };
+for (const m of ['ideal', 'real']) $(m).onclick = () => { mode = m; $('ideal').classList.toggle('on', m === 'ideal'); $('real').classList.toggle('on', m === 'real'); };
+$('rpm').oninput = e => { rpm = +e.target.value; $('rv').textContent = rpm; };
+if (Kit.P.get('timing') === 'real') $('real').click();
+</script>
+</body>
+</html>

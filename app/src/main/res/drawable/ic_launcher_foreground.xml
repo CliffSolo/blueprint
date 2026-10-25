@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- cylinder walls and head -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="3" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M40,64 L40,32 L68,32 L68,64"/>
+    <!-- spark -->
+    <path android:fillColor="#FFC93C" android:pathData="M54,25 L51,32 L54,32 L52,38 L58,30 L55,30 L57,25 Z"/>
+    <!-- piston -->
+    <path android:fillColor="#FFFFFF" android:pathData="M42.5,46 h23 v10 h-23 z"/>
+    <path android:fillColor="#1F5FAE" android:pathData="M42.5,49 h23 v1.4 h-23 z"/>
+    <!-- connecting rod -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M54,52 L61,72"/>
+    <!-- crank circle and pin -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2" android:pathData="M54,74 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M54,74 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M61,72 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0"/>
+</vector>
