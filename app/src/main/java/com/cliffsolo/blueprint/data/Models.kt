@@ -42,6 +42,10 @@ sealed interface Block {
     @Serializable @SerialName("callout")
     data class Callout(val style: String = "tip", val title: String = "", val text: String) : Block
 
+    /** An intro line followed by bullet points: the preferred way to explain a topic. */
+    @Serializable @SerialName("list")
+    data class Bullets(val intro: String = "", val items: List<String>) : Block
+
     @Serializable @SerialName("steps")
     data class Steps(val items: List<String>) : Block
 

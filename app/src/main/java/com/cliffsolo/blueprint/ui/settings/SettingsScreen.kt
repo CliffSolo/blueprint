@@ -125,7 +125,7 @@ fun SettingsScreen(app: BlueprintApp, onBack: () -> Unit) {
             item { Section("ABOUT") }
             item {
                 Text(
-                    "Blueprint 0.1.0 · Kotlin + Jetpack Compose. Courses are open source on GitHub; labs run offline once downloaded.",
+                    "Blueprint 0.2.0 · Kotlin + Jetpack Compose. Courses are open source on GitHub; labs run offline once downloaded.",
                     style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
                 )
             }

@@ -84,6 +84,32 @@ fun CalloutBlock(b: Block.Callout, spoken: Spoken, accent: Color) {
 }
 
 @Composable
+fun BulletsBlock(b: Block.Bullets, spoken: Spoken) {
+    val colors = MaterialTheme.colorScheme
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (b.intro.isNotBlank()) {
+            Text(
+                rich(b.intro, spoken.range.takeIf { spoken.active && spoken.line == -1 }),
+                fontSize = textSize, lineHeight = textLine, fontWeight = FontWeight.SemiBold, color = colors.onBackground,
+            )
+        }
+        b.items.forEachIndexed { i, item ->
+            val on = spoken.active && spoken.line == i
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                    .background(if (on) colors.primaryContainer else Color.Transparent).padding(horizontal = 6.dp, vertical = 3.dp),
+            ) {
+                Box(Modifier.padding(top = 10.dp).size(7.dp).clip(CircleShape).background(colors.secondary))
+                Text(
+                    rich(item, spoken.range.takeIf { on }), fontSize = 16.sp, lineHeight = 24.sp, color = colors.onBackground,
+                    modifier = Modifier.padding(start = 12.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun StepsBlock(b: Block.Steps, spoken: Spoken) {
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

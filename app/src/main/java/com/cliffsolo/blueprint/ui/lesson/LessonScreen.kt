@@ -138,6 +138,7 @@ fun LessonScreen(app: BlueprintApp, vm: LessonViewModel, onBack: () -> Unit, onN
                             is Block.Heading -> HeadingBlock(block)
                             is Block.Text -> TextBlock(block, spoken)
                             is Block.Callout -> CalloutBlock(block, spoken, accent)
+                            is Block.Bullets -> BulletsBlock(block, spoken)
                             is Block.Steps -> StepsBlock(block, spoken)
                             is Block.Math -> MathBlock(block)
                             is Block.Lab -> LabBlock(block, app.store.labUrl(course, block, dark))

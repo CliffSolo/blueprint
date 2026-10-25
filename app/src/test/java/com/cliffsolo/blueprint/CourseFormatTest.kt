@@ -68,6 +68,16 @@ class CourseFormatTest {
     }
 
     @Test
+    fun `bullet lists read the intro then each bullet`() {
+        val lesson = CourseJson.lesson(
+            """{"id":"x","title":"X","blocks":[{"type":"list","intro":"The strokes are:","items":["**Intake**","Power"]}]}""",
+        )
+        val u = LessonViewModel.utterancesFor(lesson)
+        assertEquals(listOf("The strokes are:", "Intake", "Power"), u.map { it.text })
+        assertEquals(listOf(-1, 0, 1), u.map { it.line })
+    }
+
+    @Test
     fun `unzip refuses entries that escape the folder`() {
         val bytes = ByteArrayOutputStream().also { out ->
             ZipOutputStream(out).use { z -> z.putNextEntry(ZipEntry("../evil.txt")); z.write(1); z.closeEntry() }

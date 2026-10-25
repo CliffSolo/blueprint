@@ -3,18 +3,40 @@
   "title": "Valves and timing",
   "minutes": 6,
   "blocks": [
-    { "type": "text", "text": "The valves have to open and close at exactly the right moment, every cycle, thousands of times a minute. Nobody flips them by hand. A spinning shaft called the **camshaft** does it." },
-    { "type": "text", "text": "The camshaft has egg-shaped bumps called **cams**. As it spins, each bump pushes its valve open, then lets a spring snap it shut." },
+    { "type": "text", "text": "The valves open and close thousands of times a minute, always at exactly the right moment. A spinning shaft does it: the **camshaft**." },
+    { "type": "list", "intro": "How the camshaft works:", "items": [
+      "It has egg-shaped bumps called **cams**",
+      "As it spins, a bump **pushes its valve open**",
+      "When the bump passes, a **spring snaps the valve shut**",
+      "A **belt or chain** links it to the crankshaft"
+    ] },
     { "type": "heading", "text": "Why the cam turns at half speed" },
-    { "type": "text", "text": "Each valve opens **once per cycle**. One cycle is **two** crank turns. So the camshaft has to turn **once** while the crankshaft turns **twice**. A belt or chain links them, and the cam gear has **twice as many teeth** as the crank gear." },
+    { "type": "list", "items": [
+      "Each valve opens **once per cycle**",
+      "One cycle = **two** crank turns",
+      "So the camshaft turns **once** while the crankshaft turns **twice**",
+      "The cam gear has **twice as many teeth** as the crank gear"
+    ] },
     { "type": "lab", "src": "labs/timing.html", "params": "", "height": 600, "caption": "Top: the crank gear (20 teeth) drives the cam gear (40 teeth). Bottom: one full cam turn, which is one whole cycle.", "narration": "Watch the counters. Every time the crankshaft finishes two turns, the camshaft finishes exactly one." },
     { "type": "math", "lines": ["Cam teeth ÷ crank teeth = 40 ÷ 20 = 2", "So the cam turns 1 time for every 2 crank turns"], "say": "Forty teeth divided by twenty teeth is two. So the cam turns once for every two turns of the crank." },
     { "type": "heading", "text": "Real engines cheat a little" },
-    { "type": "text", "text": "In a textbook engine each valve opens exactly at the top or bottom. Real engines open them **early** and close them **late**. Moving air has momentum, like water in a hose. Keeping the intake open a bit past the bottom lets the rushing air keep cramming in." },
-    { "type": "text", "text": "Around the top, between exhaust and intake, **both valves are open at once** for a moment. That's called **valve overlap**. The exhaust rushing out helps pull the fresh mix in behind it. Flip the lab to **Real** to see it." },
+    { "type": "list", "intro": "Real valve timing is a bit different from the textbook:", "items": [
+      "Valves open **early** and close **late**",
+      "Moving air has **momentum**, like water in a hose",
+      "Keeping the intake open past the bottom lets air **keep cramming in**",
+      "Near the top, **both valves are open at once** for a moment: **valve overlap**",
+      "During overlap, the rushing exhaust helps **pull the fresh mix in**"
+    ] },
+    { "type": "callout", "style": "tip", "title": "Try it", "text": "Flip the lab to **Real** and watch for the yellow overlap wedge at the top." },
     { "type": "heading", "text": "Spark timing" },
-    { "type": "text", "text": "Burning isn't instant. It takes a couple of thousandths of a second. So the spark fires **before** the top. That way the pressure peaks just **after** the top, right when it can push the piston down best. Engineers call this **spark advance**." },
-    { "type": "callout", "style": "math", "title": "Why faster means earlier", "text": "The burn always takes about the same time. But at higher RPM the crank turns further during that time, so the spark has to fire earlier. Drag the **RPM** slider and watch the ⚡ mark move." },
+    { "type": "list", "items": [
+      "Burning takes a couple of **thousandths of a second**",
+      "So the spark fires **before** the top",
+      "That makes pressure peak **just after** the top, when it pushes best",
+      "Engineers call this **spark advance**",
+      "Higher RPM = the crank turns further during the burn = spark fires **earlier**"
+    ] },
+    { "type": "callout", "style": "math", "title": "Try it", "text": "Drag the **RPM** slider and watch the ⚡ mark move earlier." },
     { "type": "math", "lines": ["3,000 RPM ÷ 60 = 50 turns per second", "1 turn = 1,000 ms ÷ 50 = 20 ms", "360° ÷ 20 ms = 18° per ms", "A 2 ms burn = 2 × 18° = 36° of crank turn"], "say": "Three thousand R P M is fifty turns a second, so one turn takes twenty milliseconds. That's eighteen degrees every millisecond. A two millisecond burn means the crank turns thirty six degrees while the fuel is still burning." },
     { "type": "quiz", "question": "The camshaft turns at what speed compared with the crankshaft?", "options": ["Twice as fast", "The same speed", "Half as fast", "A quarter as fast"], "answer": 2, "explain": "Half speed: each valve opens once per cycle, and a cycle is two crank turns." },
     { "type": "quiz", "question": "What is valve overlap?", "options": ["Both valves closed during compression", "Both valves open for a moment near the top, between exhaust and intake", "The valves bumping into the piston", "The cam turning twice per cycle"], "answer": 1, "explain": "Near the top between exhaust and intake, both are open briefly. The outgoing exhaust helps pull in the fresh mix." },

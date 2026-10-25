@@ -11,3 +11,8 @@
 - Bundled demo course: How a 4-Stroke Engine Works.
 - Unit tests for the course format, narration and zip-slip safety; GitHub Actions APK build.
 - Tested on an Android 16 (API 36) Pixel 7 emulator.
+
+## 0.2.0 · 2026-10-25
+- New `list` lesson block: an intro line plus bullet points, read aloud one bullet at a time with highlighting. Courses now explain topics with bullet lists instead of paragraphs.
+- Demo course updated to 1.1.0 (bullet-list lessons).
+- Phone screenshots added to the README.

@@ -84,6 +84,9 @@ class LessonViewModel(private val app: BlueprintApp, private val courseId: Strin
                 is Block.Heading -> listOf(Utterance(i, block.text, VoiceRole.Narrator))
                 is Block.Text -> listOf(Utterance(i, Markdown.plain(block.text), VoiceRole.Narrator))
                 is Block.Callout -> listOf(Utterance(i, Markdown.plain(block.text), VoiceRole.Notes))
+                is Block.Bullets ->
+                    listOfNotNull(block.intro.takeIf { it.isNotBlank() }?.let { Utterance(i, Markdown.plain(it), VoiceRole.Narrator, -1) }) +
+                        block.items.mapIndexed { n, item -> Utterance(i, Markdown.plain(item), VoiceRole.Narrator, n) }
                 is Block.Steps -> block.items.mapIndexed { n, item -> Utterance(i, Markdown.plain(item), VoiceRole.Narrator, n) }
                 is Block.Math -> listOf(Utterance(i, block.say.ifBlank { block.lines.joinToString(". ") }, VoiceRole.Notes))
                 is Block.Lab -> listOfNotNull(block.narration.ifBlank { block.caption }.takeIf { it.isNotBlank() }?.let { Utterance(i, it, VoiceRole.Narrator) })
